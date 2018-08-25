@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron' // eslint-disable-line
-import WeightManager from './weight-manager';
+import FileManager from './file-manager';
 
 /**
  * Set `__static` path to static files in production
@@ -49,11 +49,11 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('getWeightManager', (event) => {
-  event.sender.send('getWeightManager', WeightManager.getInstance());
+ipcMain.on('loadState', (event) => {
+  event.sender.send('state', FileManager.loadState());
 });
 
 
-ipcMain.on('saveWeightManager', (event, data) => {
-  event.sender.send('save', WeightManager.getInstance().save(data));
+ipcMain.on('saveState', (event, state) => {
+  FileManager.saveState(state);
 });

@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 const state = {
   profile: {
     name: null,
@@ -8,10 +10,40 @@ const state = {
   records: [],
 };
 
+export const toDate = (dateString) => {
+  const dateParts = dateString.split('/');
+  return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+};
+
+const getters = {
+  ORDERED_RECORDS(state) {
+    return (desc) => {
+      const records = [...state.records].sort((recordA, recordB) => {
+        const dateA = toDate(recordA.date);
+        const dateB = toDate(recordB.date);
+        if (dateA > dateB) {
+          return -1;
+        } else if (dateA < dateB) {
+          return 1;
+        }
+        return 0;
+      });
+
+      if (desc) {
+        records.reverse();
+      }
+
+      return records;
+    };
+  },
+};
+
 const mutations = {
   LOAD_STATE(state, newState) {
-    state.profile = newState.profile;
-    state.records = newState.records;
+    if (newState != null) {
+      state.profile = newState.profile;
+      state.records = newState.records;
+    }
   },
   ADD_RECORD(state, newRecord) {
     state.records.push(JSON.parse(JSON.stringify(newRecord)));
@@ -21,23 +53,29 @@ const mutations = {
   },
 };
 
+
+const saveState = state => Vue.prototype.$electron.ipcRenderer.send('saveState', state);
+
 const actions = {
-  saveState({ state }, ipcRenderer) {
-    ipcRenderer.send('saveWeightManager', state);
+  saveState({ state }) {
+    saveState(state);
   },
   loadState({ commit }, newState) {
     commit('LOAD_STATE', newState);
   },
-  addRecord({ commit }, newRecord) {
+  addRecord({ state, commit }, newRecord) {
     commit('ADD_RECORD', newRecord);
+    saveState(state);
   },
-  removeRecord({ commit }, index) {
+  removeRecord({ state, commit }, index) {
     commit('REMOVE_RECORD', index);
+    saveState(state);
   },
 };
 
 export default {
   state,
+  getters,
   mutations,
   actions,
 };

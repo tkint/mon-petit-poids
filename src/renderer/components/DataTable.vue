@@ -37,7 +37,7 @@
 	</v-dialog>
 	<v-data-table
 		:headers="headers"
-		:items="records"
+		:items="orderedRecords"
 		hide-actions>
 	  <template slot="no-data">
 		<v-alert :value="true" color="error" icon="warning">
@@ -45,8 +45,36 @@
 		</v-alert>
 	  </template>
 	  <template slot="items" slot-scope="props">
-		<td>{{ props.item.date }}</td>
-		<td>{{ props.item.weight }}</td>
+		<td>
+		  <v-edit-dialog
+			  :return-value.sync="props.item.name"
+			  lazy
+			  @save="saveState"
+			  @close="saveState">
+			{{ props.item.date }}
+			<v-text-field
+				slot="input"
+				v-model="props.item.date"
+				label="Date"
+				single-line>
+			</v-text-field>
+		  </v-edit-dialog>
+		</td>
+		<td>
+		  <v-edit-dialog
+			  :return-value.sync="props.item.name"
+			  lazy
+			  @save="saveState"
+			  @close="saveState">
+			{{ props.item.weight }} kg
+			<v-text-field
+				slot="input"
+				v-model="props.item.weight"
+				label="Date"
+				single-line>
+			</v-text-field>
+		  </v-edit-dialog>
+		</td>
 		<td>
 		  <v-btn
 			  icon
@@ -61,7 +89,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'DataTable',
@@ -73,16 +101,16 @@ export default {
       },
       dialog: false,
       headers: [
-        { text: 'Date', value: 'date' },
-        { text: 'Weight', value: 'weight' },
+        { text: 'Date', value: 'date', sortable: false },
+        { text: 'Weight', value: 'weight', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     };
   },
   computed: {
-    ...mapState({
-      records: state => state.WeightManager.records,
-    }),
+    orderedRecords() {
+      return this.$store.getters.ORDERED_RECORDS(false);
+    },
   },
   methods: {
     ...mapActions({
@@ -92,12 +120,10 @@ export default {
     }),
     add() {
       this.addRecord(this.record);
-      this.saveState(this.$electron.ipcRenderer);
       this.dialog = false;
     },
     remove(index) {
       this.removeRecord(index);
-      this.saveState(this.$electron.ipcRenderer);
     },
   },
 };

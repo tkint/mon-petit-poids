@@ -2,7 +2,7 @@
   <v-navigation-drawer permanent app>
 	<v-card>
 	  <v-card-title>
-		WeightManager
+		<h1>Mon Petit Poids</h1>
 	  </v-card-title>
 	  <v-card-text>
 		<v-form v-if="profile">
@@ -29,9 +29,6 @@
 		  </v-text-field>
 		</v-form>
 	  </v-card-text>
-	  <v-card-actions>
-		<v-btn class="teal" block @click="save">Save</v-btn>
-	  </v-card-actions>
 	</v-card>
   </v-navigation-drawer>
 </template>
@@ -40,22 +37,24 @@
 import { mapState, mapActions } from 'vuex';
 
 export default {
-  name: 'Home',
-  data() {
-    return {};
-  },
+  name: 'Profile',
   computed: {
     ...mapState({
       profile: state => state.WeightManager.profile,
     }),
   },
+  watch: {
+    profile: {
+      handler() {
+        this.saveState();
+      },
+      deep: true,
+    },
+  },
   methods: {
     ...mapActions({
       saveState: 'saveState',
     }),
-    save() {
-      this.saveState(this.$electron.ipcRenderer);
-    },
   },
 };
 </script>

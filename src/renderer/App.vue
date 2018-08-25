@@ -20,10 +20,9 @@ export default {
     }),
   },
   mounted() {
-    this.$electron.ipcRenderer.send('getWeightManager');
-    this.$electron.ipcRenderer.on('getWeightManager', (event, weightManager) => {
-      console.log(weightManager);
-      this.loadState(weightManager.data);
+    this.$electron.ipcRenderer.send('loadState');
+    this.$electron.ipcRenderer.on('state', (event, state) => {
+      this.loadState(state);
     });
   },
 };
