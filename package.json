@@ -1,6 +1,6 @@
 {
   "name": "mon-petit-poids",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Thomas Kint <thomaskint.pro@gmail.com>",
   "description": "Application de suivi de poids",
   "license": null,
@@ -20,7 +20,7 @@
   },
   "build": {
     "productName": "Mon Petit Poids",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "com.thomaskint.mon-petit-poids",
     "directories": {
       "output": "build"
     },
