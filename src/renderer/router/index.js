@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Main from '@/components/Main';
+import Home from '@/components/home/Home';
+import Profile from '@/components/profile/Profile';
 
 Vue.use(Router);
 
@@ -8,8 +9,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Main',
-      component: Main,
+      name: 'Home',
+      component: Home,
+    },
+    {
+      path: '/profile/:id',
+      name: 'Profile',
+      component: Profile,
     },
     {
       path: '*',

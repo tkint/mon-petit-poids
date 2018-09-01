@@ -4,38 +4,49 @@
 		:width="300"
 		v-model="dialog">
 	  <v-btn
-		  block
-		  class="teal"
+		  dark
+		  class="orange darken-1"
 		  slot="activator">
 		New Record
 	  </v-btn>
-	  <v-card>
-		<v-card-title>
-		  New Record
+	  <v-card dark class="teal darken-2">
+		<v-card-title class="orange darken-1">
+		  <v-flex xs12>
+			<v-layout justify-center>
+			  <h2>
+				Add new record
+			  </h2>
+			</v-layout>
+		  </v-flex>
 		</v-card-title>
 		<v-card-text>
 		  <v-form>
 			<v-text-field
-				v-model="record.date"
-				label="Date">
+				label="Date"
+				color="orange"
+				v-model="defaultRecord.date">
 			</v-text-field>
 			<v-text-field
-				v-model="record.weight"
-				label="Weight">
+				type="number"
+				label="Weight"
+				color="orange"
+				v-model="defaultRecord.weight">
 			</v-text-field>
 		  </v-form>
 		</v-card-text>
 		<v-card-actions>
 		  <v-btn
 			  block
-			  class="teal"
+			  class="blue"
 			  @click="add()">
-			Add
+			OK
 		  </v-btn>
 		</v-card-actions>
 	  </v-card>
 	</v-dialog>
 	<v-data-table
+		dark
+		class="elevation-5"
 		:headers="headers"
 		:items="orderedRecords"
 		hide-actions>
@@ -46,41 +57,33 @@
 	  </template>
 	  <template slot="items" slot-scope="props">
 		<td>
-		  <v-edit-dialog
-			  :return-value.sync="props.item.name"
-			  lazy
-			  @save="saveState"
-			  @close="saveState">
-			{{ props.item.date }}
-			<v-text-field
-				slot="input"
-				v-model="props.item.date"
-				label="Date"
-				single-line>
-			</v-text-field>
-		  </v-edit-dialog>
+		  {{props.item.date}}
 		</td>
 		<td>
 		  <v-edit-dialog
-			  :return-value.sync="props.item.name"
 			  lazy
-			  @save="saveState"
-			  @close="saveState">
+			  dark
+			  :return-value.sync="props.item.name"
+			  @save="SAVE_STATE"
+			  @close="SAVE_STATE">
 			{{ props.item.weight }} kg
 			<v-text-field
 				slot="input"
-				v-model="props.item.weight"
-				label="Date"
-				single-line>
+				color="orange"
+				type="number"
+				label="Weight"
+				v-model="props.item.weight">
 			</v-text-field>
 		  </v-edit-dialog>
 		</td>
 		<td>
 		  <v-btn
-			  icon
-			  class="red darken-1 elevation-2"
-			  @click="remove(props.index)">
-			<v-icon>delete</v-icon>
+			  fab
+			  flat
+			  small
+			  class="red darken-2 elevation-1"
+			  @click="remove(props.item.id)">
+			<v-icon>clear</v-icon>
 		  </v-btn>
 		</td>
 	  </template>
@@ -89,16 +92,13 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'DataTable',
+  props: ['profileId'],
   data() {
     return {
-      record: {
-        date: new Date().toLocaleDateString('fr-FR'),
-        weight: null,
-      },
       dialog: false,
       headers: [
         { text: 'Date', value: 'date', sortable: false },
@@ -108,27 +108,36 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      defaultRecord: state => state.WeightManager.defaultRecord,
+    }),
     orderedRecords() {
-      return this.$store.getters.ORDERED_RECORDS(false);
+      return this.$store.getters.ORDERED_RECORDS(this.profileId, false);
     },
   },
   methods: {
     ...mapActions({
-      saveState: 'saveState',
-      addRecord: 'addRecord',
-      removeRecord: 'removeRecord',
+      SAVE_STATE: 'SAVE_STATE',
+      ADD_RECORD: 'ADD_RECORD',
+      REMOVE_RECORD: 'REMOVE_RECORD',
     }),
     add() {
-      this.addRecord(this.record);
+      this.ADD_RECORD(this.profileId);
       this.dialog = false;
     },
-    remove(index) {
-      this.removeRecord(index);
+    remove(recordId) {
+      this.REMOVE_RECORD({ profileId: this.profileId, recordId });
     },
   },
 };
 </script>
 
-<style scoped>
+<style>
+  .v-datatable {
+	background: #00897b !important;
+  }
 
+  .v-datatable tr:hover {
+	background: teal !important;
+  }
 </style>

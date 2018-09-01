@@ -1,28 +1,35 @@
 <template>
-  <v-app dark>
-	<profile></profile>
-	<v-content>
-	  <router-view></router-view>
-	</v-content>
+  <v-app fixed>
+	<v-toolbar class="orange" dark style="z-index: 5">
+	  <v-toolbar-items style="position: fixed">
+		<v-btn :to="{name: 'Home'}" class="orange darken-4" flat>
+		  Home
+		</v-btn>
+	  </v-toolbar-items>
+	  <v-spacer></v-spacer>
+	  <v-toolbar-title class="v-btn--round orange darken-3 px-3 py-2">
+		Mon Petit Poids
+	  </v-toolbar-title>
+	  <v-spacer></v-spacer>
+	</v-toolbar>
+	<router-view class="teal darken-3"></router-view>
   </v-app>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import Profile from '@/components/Profile';
 
 export default {
   name: 'mon-petit-poids',
-  components: { Profile },
   methods: {
     ...mapActions({
-      loadState: 'loadState',
+      LOAD_STATE: 'LOAD_STATE',
     }),
   },
-  mounted() {
+  beforeCreate() {
     this.$electron.ipcRenderer.send('loadState');
     this.$electron.ipcRenderer.on('state', (event, state) => {
-      this.loadState(state);
+      this.LOAD_STATE(state);
     });
   },
 };

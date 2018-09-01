@@ -1,6 +1,9 @@
 import os from 'os';
 import fs from 'fs';
 
+const dir = '.mon-petit-poids';
+const file = 'data.json';
+
 export default class FileManager {
   static loadState() {
     if (fs.existsSync(this.getFilePath())) {
@@ -18,10 +21,10 @@ export default class FileManager {
 
   static getFilePath() {
     const homedir = os.homedir();
-    const datadir = `${homedir}/mon-petit-poids`;
+    const datadir = `${homedir}/${dir}`;
     if (!fs.existsSync(datadir)) {
       fs.mkdirSync(datadir);
     }
-    return `${datadir}/data.json`;
+    return `${datadir}/${file}`;
   }
 }
